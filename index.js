@@ -1,8 +1,12 @@
+require('dotenv').config({ debug: process.env.DEBUG })
 const puppeteer = require('puppeteer');
 const $ = require('cheerio');
 const CronJob = require('cron').CronJob;
 const nodemailer = require('nodemailer');
 
+// gmail account settings
+const EMAIL = process.env.MAIL_ADRESS;
+const PASS = process.env.MAIL_PASS;
 
 const PRODUCT_URLS = {
   productOne: 'cowin-SE7-Cancelling-Headphones-Comfortable-Black/dp/B07DB4WNFW' // Product 1 - Playstation
