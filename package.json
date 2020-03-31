@@ -1,5 +1,5 @@
 {
-  "name": "Node Amazon price tracker",
+  "name": "node-aazon-price-tracker",
   "version": "1.0.0",
   "description": "Node and Puppeteer used to track/scrap amazon for price change",
   "main": "index.js",
