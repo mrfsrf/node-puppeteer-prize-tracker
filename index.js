@@ -12,9 +12,9 @@ let trackingUrl = '';
 
 
 const PRODUCT_URLS = {
-  // productOne: 'dp/B07Q1YXVWH/ref=psdc_4085761_t1_B07DB4WNFW', // Product 1 - headphones
+  productOne: 'dp/B07Q1YXVWH', // Product 1 - headphones
   productTwo: 'dp/B07MTDQP7F', // Google Pixel 3XL
-  // productThree: 'Nintendo-Switch-Neon-eShop-Voucher/dp/B07TB3VS2C' // Nitendo switch
+  productThree: 'dp/B07W7H3LYZ', // Nitendo switch
   productFour: 'dp/B07Q3RX9MY'
   // https://www.amazon.co.uk/Dewdrop-Display-Smartphone-Ultra-wide-Sim-Free-Black/dp/B07Q3RX9MY?ref_=s9_apbd_otopr_hd_bw_b5qselD&pf_rd_r=66CXGMDETK4WKVPG5B69&pf_rd_p=6009d7e0-7bae-5e6b-9e98-f5228ba53cfd&pf_rd_s=merchandised-search-11&pf_rd_t=BROWSE&pf_rd_i=5362060031
 };
@@ -32,21 +32,29 @@ async function configureBrowser() {
     }
 }
 
+$.prototype.exists = function (selector) {
+  return this.find($('#' + selector)).length > 0;
+}
 
 async function checkPrice(page) {
     await page.reload();
     let html = await page.evaluate(() => document.body.innerHTML);
     // actualy it is #priceblock_saleprice !!!
-    $('#priceblock_ourprice', html).each(function () {
+    // console.log('ourprice exsistes ' + $('#priceblock_ourprice', html).length);
+    // console.log('saleprice exsistes ' + $('#priceblock_saleprice', html).length);
+    let productName = $('#productTitle', html).text();
+    productName = productName.replace(/\s\s+/g, ' ');
+
+    $('#priceblock_ourprice, #priceblock_saleprice', html).each(function () {
       let dollarPrice = $(this).text();
       const initialPrice = Number(dollarPrice.replace(/[^0-9.-]+/g, "")); // set first time only!
-
+      console.log(productName);
       console.log(dollarPrice);
       let currentPrice = Number(dollarPrice.replace(/[^0-9.-]+/g, ""));
 
       if (currentPrice < initialPrice) {
         console.log("BUY!!!! " + currentPrice);
-        sendNotification(currentPrice);
+        sendNotification(currentPrice, productName);
       }
     });
 }
@@ -64,7 +72,7 @@ async function startTracking(url) {
 }
 
 
-async function sendNotification(price) {
+async function sendNotification(price, product) {
 
   let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -74,7 +82,7 @@ async function sendNotification(price) {
     }
   });
 
-  let textToSend = 'Price dropped to ' + price;
+  let textToSend = 'Price for product ' + product + 'dropped to ' + price;
   let htmlText = `<a href=\"${trackingUrl}\">Link</a>`;
 
   let info = await transporter.sendMail({
