@@ -39,17 +39,14 @@ $.prototype.exists = function (selector) {
 async function checkPrice(page) {
     await page.reload();
     let html = await page.evaluate(() => document.body.innerHTML);
-    // actualy it is #priceblock_saleprice !!!
-    // console.log('ourprice exsistes ' + $('#priceblock_ourprice', html).length);
-    // console.log('saleprice exsistes ' + $('#priceblock_saleprice', html).length);
     let productName = $('#productTitle', html).text();
     productName = productName.replace(/\s\s+/g, ' ');
 
-    $('#priceblock_ourprice, #priceblock_saleprice', html).each(function () {
+    $("#price span[id^=priceblock_]", html).each(function () {
       let dollarPrice = $(this).text();
       const initialPrice = Number(dollarPrice.replace(/[^0-9.-]+/g, "")); // set first time only!
       console.log(productName);
-      console.log(dollarPrice);
+      console.log(initialPrice);
       let currentPrice = Number(dollarPrice.replace(/[^0-9.-]+/g, ""));
 
       if (currentPrice < initialPrice) {
